@@ -1,0 +1,7 @@
+# we do not want to track the project version
+# in the very same project. you still want to
+# have the file in its minimal form as part of
+# the repo in order for the embed system to work
+# without having to generate the buildinfo first,
+# for local development purposes
+buildinfo.json
