@@ -8,11 +8,6 @@ import (
 	"github.com/UiP9AV6Y/buildinfo"
 )
 
-const (
-	// Identifier returned by JSON#String()
-	Ident = "json"
-)
-
 // JSON is a renderer.BuildRenderer implementation emitting
 // JSON-formatted data
 type JSON struct {
