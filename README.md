@@ -2,6 +2,19 @@
 
 Golang utility to generate build information suitable for embedding in code.
 
+Applications usually expose their version information in one way or another.
+Up until this point, in the context of Golang, this information was embedded into
+the compiled artifact via linker flags during building. The actual information
+was calculated via a series of (shell-) commands. Since all of this requires
+orchestration, this was usually done using some kind of build system (Make, Bazel, ...)
+
+`buildinfo` aims to remove all that cruft, by collecting and exposing the build
+information in a single call.
+
+Despite the name, it has actually no relation and very little similarity to
+[debug.Buildinfo](https://pkg.go.dev/runtime/debug#BuildInfo),
+which is available since Golang 1.18.
+
 ## Usage
 
 Typically `buildinfo` is used as [Golang generator](https://go.dev/blog/generate).
@@ -27,6 +40,36 @@ buildinfo.json
 ### `buildinfo.json`
 ```json
 {}
+```
+
+## Building
+
+`buildinfo` (the library) does not require any pre-processing.
+`buildinfo` (the tool) lives in the `tools` subdirectory. Generated
+files are shipped with the source code and can be recreated using
+the respective utilities.
+
+### Man pages
+
+```sh
+cd ./tools
+go install github.com/mmarkdown/mmark/v2@latest
+go generate ./man
+```
+
+### Build information
+
+```sh
+cd ./tools
+go install github.com/UiP9AV6Y/buildinfo/tools/cmd/buildinfo@latest
+go generate ./version
+```
+
+### `buildinfo`
+
+```sh
+cd ./tools
+go build -o buildinfo ./cmd/buildinfo
 ```
 
 ## Example
