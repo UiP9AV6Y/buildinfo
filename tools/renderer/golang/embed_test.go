@@ -30,11 +30,7 @@ func TestRenderBuildInfo(t *testing.T) {
 
 	for ctx, tc := range testCases {
 		t.Run(ctx, func(t *testing.T) {
-			subject := &Embed{
-				Pkg:       tc.havePkg,
-				Generator: tc.haveGenerator,
-				Input:     tc.haveInput,
-			}
+			subject := New(tc.havePkg, tc.haveInput, tc.haveGenerator)
 			got, err := subject.RenderBuildInfo(tc.haveInfo)
 
 			if tc.wantError {

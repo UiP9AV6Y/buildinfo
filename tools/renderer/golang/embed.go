@@ -2,7 +2,7 @@ package golang
 
 import (
 	"bytes"
-	"fmt"
+	"strings"
 	"text/template"
 
 	"github.com/UiP9AV6Y/buildinfo"
@@ -19,8 +19,8 @@ import (
 	"github.com/UiP9AV6Y/buildinfo"
 )
 
-//go:generate {{ .Generator }} --generate buildinfo --filename {{ .Generator }}.json --project-dir {{ .Input }}
-//go:embed {{ .Generator }}.json
+//{{ "go:" }}generate {{ .Generator }} --generate buildinfo --filename {{ .Generator }}.json --project-dir {{ .Input }}
+//{{ "go:" }}embed {{ .Generator }}.json
 var embedInfo []byte
 var buildInfo *buildinfo.BuildInfo
 
@@ -41,17 +41,31 @@ func Print(program string) string {
 )
 
 // Embed is a code renderer using the internal fields as template variables.
-type Embed struct {
-	Pkg, Generator, Input string
+type Embed map[string]string
+
+// New returns a new Embed instance with the given template properties defined.
+func New(pkg, input, generator string) Embed {
+	result := map[string]string {
+		"Pkg":       pkg,
+		"Input":     input,
+		"Generator": generator,
+	}
+
+	return result
 }
 
 // String implements the fmt.Stringer interface
-func (e *Embed) String() string {
-	return fmt.Sprintf("(Pkg=%s, Generator=%s, Input=%s)", e.Pkg, e.Generator, e.Input)
+func (e Embed) String() string {
+	pairs := make([]string, 0, len(e))
+	for k, v := range e {
+		pairs = append(pairs, k+"="+v)
+	}
+
+	return "("+strings.Join(pairs, ", ")+")"
 }
 
 // RenderBuildInfo implements the renderer.BuildRenderer interface
-func (e *Embed) RenderBuildInfo(_ *buildinfo.BuildInfo) ([]byte, error) {
+func (e Embed) RenderBuildInfo(_ *buildinfo.BuildInfo) ([]byte, error) {
 	tmpl, err := template.New("golang-embed").Parse(EmbedText)
 	if err != nil {
 		return nil, err

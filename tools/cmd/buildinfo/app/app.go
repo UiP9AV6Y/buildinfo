@@ -67,7 +67,7 @@ func (a *Application) GenerateBuildInfo(logger log.Logger) error {
 		return err
 	}
 
-	r := json.New(0)
+	r := json.NewMinified()
 
 	return a.write(func(o string, w io.Writer) error {
 		b, err := r.RenderBuildInfo(i)
@@ -84,11 +84,7 @@ func (a *Application) GenerateBuildInfo(logger log.Logger) error {
 
 // GenerateGolangEmbed renders Golang code with buildinfo embed instructions.
 func (a *Application) GenerateGolangEmbed(logger log.Logger) error {
-	e := &golang.Embed{
-		Pkg:       a.namespace(),
-		Input:     a.input(),
-		Generator: a.name,
-	}
+	e := golang.New(a.namespace(), a.input(), a.name)
 
 	return a.write(func(o string, w io.Writer) error {
 		b, err := e.RenderBuildInfo(nil)
