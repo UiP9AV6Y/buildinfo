@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	// default value for EnvironmentInfo.Version
+	// default value for VersionInfo.Version
 	DefaultVersion = "0.0.0"
-	// default value for EnvironmentInfo.Revision
+	// default value for VersionInfo.Revision
 	DefaultRevision = "HEAD"
-	// default value for EnvironmentInfo.Branch
+	// default value for VersionInfo.Branch
 	DefaultBranch = "trunk"
 )
 
