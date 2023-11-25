@@ -76,6 +76,12 @@ go build -o buildinfo ./cmd/buildinfo
 
 `buildinfo` dogfeeds its own product in [./tools/version/version.go](./tools/version/version.go).
 
+## Alternatives
+
+* [go-pogo/buildinfo](https://github.com/go-pogo/buildinfo)
+* [jfrog/build-info-go](https://github.com/jfrog/build-info-go)
+* [hlandau/buildinfo](https://github.com/hlandau/buildinfo)
+
 ## License
 
 BSD 4-Clause, see [LICENSE](LICENSE).
