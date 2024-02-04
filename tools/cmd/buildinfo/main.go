@@ -56,6 +56,11 @@ func run(a []string, o, e io.Writer) int {
 	fs.StringVar(&app.ProjectDir, "project-dir", os.Getenv("BUILDINFO_PROJECT_DIR"), "Project root directory to parse for version information")
 	fs.StringVar(&app.Format, "generate", os.Getenv("BUILDINFO_GENERATE"), "Data generator to use for build information processing")
 	fs.StringVar(&app.Namespace, "generate.namespace", os.Getenv("GOPACKAGE"), "Code namespace if output directory is not suitable/detectable")
+	fs.StringVar(&app.VersionParser, "parser.version", os.Getenv("BUILDINFO_PARSER_VERSION"), "Version parser strategy to use. Valid values include git, file, and mock. If not specified, an appropriate provider will be selected")
+	fs.StringVar(&app.GitExe, "git.exe", os.Getenv("BUILDINFO_GIT_EXE"), "Filesystem location for the git executable")
+	fs.StringVar(&app.MockVersion, "mock.version", os.Getenv("BUILDINFO_MOCK_VERSION"), "Version value for the mock strategy")
+	fs.StringVar(&app.MockRevision, "mock.revision", os.Getenv("BUILDINFO_MOCK_REVISION"), "Revision value for the mock strategy")
+	fs.StringVar(&app.MockBranch, "mock.branch", os.Getenv("BUILDINFO_MOCK_BRANCH"), "Branch value for the mock strategy")
 	fs.SetOutput(io.Discard) // discard any output until after parse, as it writes error messages on its own
 
 	if err := fs.Parse(a[1:]); err != nil {

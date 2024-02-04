@@ -11,6 +11,27 @@ type Mock struct {
 	info *buildinfo.VersionInfo
 }
 
+// TryParse creates a parser instance with version info populated
+// from the given input. only non-empty values are actually
+// stored in the resulting output.
+func TryParse(version, revision, branch string) (*Mock, error) {
+	result := buildinfo.NewVersionInfo()
+
+	if version != "" {
+		result.Version = version
+	}
+
+	if revision != "" {
+		result.Revision = revision
+	}
+
+	if branch != "" {
+		result.Branch = branch
+	}
+
+	return New(result), nil
+}
+
 // NewRandom creates a new mock parser instance which produces
 // a new buildinfo.BuildInfo instance with every call to Mock#ParseBuildInfo()
 func NewRandom() *Mock {

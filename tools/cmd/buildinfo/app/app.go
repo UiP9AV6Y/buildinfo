@@ -12,14 +12,20 @@ import (
 
 	"github.com/UiP9AV6Y/buildinfo"
 	"github.com/UiP9AV6Y/buildinfo/tools/parser"
+	"github.com/UiP9AV6Y/buildinfo/tools/parser/file"
+	"github.com/UiP9AV6Y/buildinfo/tools/parser/git"
+	"github.com/UiP9AV6Y/buildinfo/tools/parser/mock"
 	"github.com/UiP9AV6Y/buildinfo/tools/renderer/golang"
 	"github.com/UiP9AV6Y/buildinfo/tools/renderer/json"
 )
 
 // Application is a logic router implementation
 type Application struct {
-	Filename, ProjectDir string
-	Format, Namespace    string
+	Filename, ProjectDir                  string
+	Format, Namespace                     string
+	VersionParser                         string
+	GitExe                                string
+	MockVersion, MockRevision, MockBranch string
 
 	name string
 }
@@ -110,7 +116,26 @@ func (a *Application) GenerateGolangEmbed(logger log.Logger) error {
 }
 
 func (a *Application) versionInfo(logger log.Logger) (*buildinfo.VersionInfo, error) {
-	vp, err := parser.ParseVersionParser(a.ProjectDir)
+	var vp parser.VersionParser
+	var err error
+
+	switch a.VersionParser {
+	case "":
+		vp, err = parser.ParseVersionParser(a.ProjectDir)
+	case "file":
+		vp, err = file.TryParse(a.ProjectDir)
+	case "git":
+		if a.GitExe != "" {
+			vp, err = git.TryParse(a.GitExe, a.ProjectDir)
+		} else {
+			vp, err = git.TrySystemParse(a.ProjectDir)
+		}
+	case "mock":
+		vp, err = mock.TryParse(a.MockVersion, a.MockRevision, a.MockBranch)
+	default:
+		err = fmt.Errorf("Invalid version parser %q", a.VersionParser)
+	}
+
 	if err != nil {
 		return nil, err
 	}

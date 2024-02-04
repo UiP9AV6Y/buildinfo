@@ -38,6 +38,10 @@ type File struct {
 	file string
 }
 
+// TryParse attempts to parse the version information from various
+// files in the given directory. If no files known to contain version
+// information exist, ErrNoRepository is returned. All other errors
+// are a result of file access problems or data corruption issues.
 func TryParse(path string) (*File, error) {
 	var file string
 
