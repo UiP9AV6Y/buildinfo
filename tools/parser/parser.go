@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/UiP9AV6Y/buildinfo"
+	"github.com/UiP9AV6Y/buildinfo/tools/parser/file"
 	"github.com/UiP9AV6Y/buildinfo/tools/parser/git"
 	"github.com/UiP9AV6Y/buildinfo/tools/parser/mock"
 	"github.com/UiP9AV6Y/buildinfo/tools/parser/os"
@@ -40,6 +41,12 @@ func ParseVersionParser(dir string) (VersionParser, error) {
 
 	base, err := filepath.Abs(dir)
 	if err != nil {
+		return nil, err
+	}
+
+	if f, err := file.TryParse(base); err == nil {
+		return f, nil
+	} else if !errors.Is(err, file.ErrNoFile) {
 		return nil, err
 	}
 

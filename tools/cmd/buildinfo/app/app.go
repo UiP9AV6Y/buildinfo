@@ -62,11 +62,19 @@ func (a *Application) Run(logger log.Logger) error {
 
 // GenerateBuildInfo parses the buildinfo data and renders them using JSON.
 func (a *Application) GenerateBuildInfo(logger log.Logger) error {
-	i, err := a.buildInfo(logger)
+	level.Debug(logger).Log("msg", "Parsing build information", "input", a.ProjectDir)
+
+	v, err := a.versionInfo(logger)
 	if err != nil {
 		return err
 	}
 
+	e, err := a.environmentInfo(logger)
+	if err != nil {
+		return err
+	}
+
+	i := buildinfo.NewBuildInfo(v, e)
 	r := json.NewMinified()
 
 	return a.write(func(o string, w io.Writer) error {
@@ -84,6 +92,8 @@ func (a *Application) GenerateBuildInfo(logger log.Logger) error {
 
 // GenerateGolangEmbed renders Golang code with buildinfo embed instructions.
 func (a *Application) GenerateGolangEmbed(logger log.Logger) error {
+	level.Debug(logger).Log("msg", "Rendering Golang embed code", "name", a.name, "namespace", a.namespace())
+
 	e := golang.New(a.namespace(), a.input(), a.name)
 
 	return a.write(func(o string, w io.Writer) error {
@@ -99,21 +109,18 @@ func (a *Application) GenerateGolangEmbed(logger log.Logger) error {
 	})
 }
 
-func (a *Application) buildInfo(logger log.Logger) (*buildinfo.BuildInfo, error) {
-	level.Info(logger).Log("msg", "Parsing build information", "input", a.ProjectDir)
-
+func (a *Application) versionInfo(logger log.Logger) (*buildinfo.VersionInfo, error) {
 	vp, err := parser.ParseVersionParser(a.ProjectDir)
 	if err != nil {
 		return nil, err
 	}
 
-	level.Info(logger).Log("msg", "Parsing VCS information", "parser", &lazyReflect{v: vp})
+	level.Info(logger).Log("msg", "Parsing version information", "parser", &lazyReflect{v: vp})
 
-	v, err := vp.ParseVersionInfo()
-	if err != nil {
-		return nil, err
-	}
+	return vp.ParseVersionInfo()
+}
 
+func (a *Application) environmentInfo(logger log.Logger) (*buildinfo.EnvironmentInfo, error) {
 	ep, err := parser.ParseEnvironmentParser()
 	if err != nil {
 		return nil, err
@@ -121,12 +128,7 @@ func (a *Application) buildInfo(logger log.Logger) (*buildinfo.BuildInfo, error)
 
 	level.Info(logger).Log("msg", "Parsing environment information", "parser", &lazyReflect{v: ep})
 
-	e, err := ep.ParseEnvironmentInfo()
-	if err != nil {
-		return nil, err
-	}
-
-	return buildinfo.NewBuildInfo(v, e), nil
+	return ep.ParseEnvironmentInfo()
 }
 
 func (a *Application) write(consumer func(string, io.Writer) error) error {
