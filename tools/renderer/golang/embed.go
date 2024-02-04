@@ -45,7 +45,7 @@ type Embed map[string]string
 
 // New returns a new Embed instance with the given template properties defined.
 func New(pkg, input, generator string) Embed {
-	result := map[string]string {
+	result := map[string]string{
 		"Pkg":       pkg,
 		"Input":     input,
 		"Generator": generator,
@@ -61,7 +61,7 @@ func (e Embed) String() string {
 		pairs = append(pairs, k+"="+v)
 	}
 
-	return "("+strings.Join(pairs, ", ")+")"
+	return "(" + strings.Join(pairs, ", ") + ")"
 }
 
 // RenderBuildInfo implements the renderer.BuildRenderer interface

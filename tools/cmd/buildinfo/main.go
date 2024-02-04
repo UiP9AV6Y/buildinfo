@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	os.Exit(run(os.Stdout, os.Stderr))
+	os.Exit(run(os.Args, os.Stdout, os.Stderr))
 }
 
 func runHelp(fs *flag.FlagSet) int {
@@ -43,9 +43,9 @@ func newLogger(lvl string, o io.Writer) (log.Logger, error) {
 	return logger, nil
 }
 
-func run(o, e io.Writer) int {
+func run(a []string, o, e io.Writer) int {
 	var l io.Writer
-	n := filepath.Base(os.Args[0])
+	n := filepath.Base(a[0])
 	fs := flag.NewFlagSet(n, flag.ContinueOnError)
 	app := app.New(n)
 	help := fs.Bool("help", false, "Show the program usage and exit")
@@ -56,9 +56,10 @@ func run(o, e io.Writer) int {
 	fs.StringVar(&app.ProjectDir, "project-dir", os.Getenv("BUILDINFO_PROJECT_DIR"), "Project root directory to parse for version information")
 	fs.StringVar(&app.Format, "generate", os.Getenv("BUILDINFO_GENERATE"), "Data generator to use for build information processing")
 	fs.StringVar(&app.Namespace, "generate.namespace", os.Getenv("GOPACKAGE"), "Code namespace if output directory is not suitable/detectable")
-	fs.SetOutput(o)
+	fs.SetOutput(io.Discard) // discard any output until after parse, as it writes error messages on its own
 
-	if err := fs.Parse(os.Args[1:]); err != nil {
+	if err := fs.Parse(a[1:]); err != nil {
+		fs.SetOutput(o)
 		if errors.Is(err, flag.ErrHelp) {
 			return runHelp(fs)
 		} else {
@@ -66,6 +67,8 @@ func run(o, e io.Writer) int {
 
 			return 1
 		}
+	} else {
+		fs.SetOutput(o)
 	}
 
 	if *info {
