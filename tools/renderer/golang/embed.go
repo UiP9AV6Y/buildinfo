@@ -19,7 +19,7 @@ import (
 	"github.com/UiP9AV6Y/buildinfo"
 )
 
-//{{ "go:" }}generate {{ .Generator }} --generate buildinfo --filename {{ .Generator }}.json --project-dir {{ .Input }}
+//{{ "go:" }}generate {{ .Generator }} {{ .Args }}
 //{{ "go:" }}embed {{ .Generator }}.json
 var embedInfo []byte
 var buildInfo *buildinfo.BuildInfo
@@ -43,11 +43,30 @@ func Print(program string) string {
 // Embed is a code renderer using the internal fields as template variables.
 type Embed map[string]string
 
-// New returns a new Embed instance with the given template properties defined.
+// DefaultArgs returns a set of default arguments for the rendered template output
+func DefaultArgs(input, generator string) []string {
+	result := []string{
+		"--generate",
+		"buildinfo",
+		"--filename",
+		generator + ".json",
+		"--project-dir",
+		input,
+	}
+
+	return result
+}
+
+// New returns a new Embed instance with minimal arguments for the rendered template.
 func New(pkg, input, generator string) Embed {
+	return NewArgs(pkg, generator, DefaultArgs(input, generator)...)
+}
+
+// New returns a new Embed instance with the given template properties defined.
+func NewArgs(pkg, generator string, args ...string) Embed {
 	result := map[string]string{
 		"Pkg":       pkg,
-		"Input":     input,
+		"Args":      strings.Join(args, " "),
 		"Generator": generator,
 	}
 

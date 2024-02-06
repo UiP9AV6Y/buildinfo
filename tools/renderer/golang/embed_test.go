@@ -13,7 +13,7 @@ func TestRenderBuildInfo(t *testing.T) {
 	type testCase struct {
 		havePkg       string
 		haveGenerator string
-		haveInput     string
+		haveArgs      []string
 		haveInfo      *buildinfo.BuildInfo
 		wantError     bool
 		want          string
@@ -23,14 +23,20 @@ func TestRenderBuildInfo(t *testing.T) {
 		"simple": testCase{
 			havePkg:       "golang",
 			haveGenerator: "gotest",
-			haveInput:     "/mock/src",
+			haveArgs:      DefaultArgs("/mock/src", "gotest"),
 			want:          "embed.golden",
+		},
+		"args": testCase{
+			havePkg:       "golang",
+			haveGenerator: "gotest",
+			haveArgs:      []string{"--verbose", "--minify", "--log.level", "debug"},
+			want:          "args.golden",
 		},
 	}
 
 	for ctx, tc := range testCases {
 		t.Run(ctx, func(t *testing.T) {
-			subject := New(tc.havePkg, tc.haveInput, tc.haveGenerator)
+			subject := NewArgs(tc.havePkg, tc.haveGenerator, tc.haveArgs...)
 			got, err := subject.RenderBuildInfo(tc.haveInfo)
 
 			if tc.wantError {

@@ -100,7 +100,7 @@ func (a *Application) GenerateBuildInfo(logger log.Logger) error {
 func (a *Application) GenerateGolangEmbed(logger log.Logger) error {
 	level.Debug(logger).Log("msg", "Rendering Golang embed code", "name", a.name, "namespace", a.namespace())
 
-	e := golang.New(a.namespace(), a.input(), a.name)
+	e := golang.NewArgs(a.namespace(), a.name, a.embedArgs()...)
 
 	return a.write(func(o string, w io.Writer) error {
 		b, err := e.RenderBuildInfo(nil)
@@ -179,6 +179,33 @@ func (a *Application) write(consumer func(string, io.Writer) error) error {
 	}
 
 	return consumer(o, w)
+}
+
+func (a *Application) embedArgs() []string {
+	result := golang.DefaultArgs(a.input(), a.name)
+
+	if a.VersionParser != "" {
+		result = append(result, "--parser.version", a.VersionParser)
+	}
+
+	switch a.VersionParser {
+	case "git":
+		if a.GitExe != "" {
+			result = append(result, "--git.exe", a.GitExe)
+		}
+	case "mock":
+		if a.MockVersion != "" {
+			result = append(result, "--mock.version", a.MockVersion)
+		}
+		if a.MockRevision != "" {
+			result = append(result, "--mock.revision", a.MockRevision)
+		}
+		if a.MockBranch != "" {
+			result = append(result, "--mock.branch", a.MockBranch)
+		}
+	}
+
+	return result
 }
 
 func (a *Application) input() string {
