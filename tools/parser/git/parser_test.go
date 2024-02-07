@@ -34,26 +34,26 @@ func TestTryParse(t *testing.T) {
 	}
 
 	testCases := map[string]testCase{
-		"not in PATH": testCase{
+		"not in PATH": {
 			haveCmd:   "git-notexists",
 			wantError: true,
 		},
-		"no git repo": testCase{
+		"no git repo": {
 			haveCmd:   "git-mock.sh",
 			havePath:  "/mock/NOT_GIT_REPO",
 			wantError: true,
 		},
-		"git error": testCase{
+		"git error": {
 			haveCmd:   "git-mock.sh",
 			havePath:  "/mock/FAIL",
 			wantError: true,
 		},
-		"relative bin": testCase{
+		"relative bin": {
 			haveCmd:  "git-mock.sh",
 			havePath: "/mock/SHOW_TOPLEVEL",
 			want:     New(gitBin, "/mock/src"),
 		},
-		"absolute bin": testCase{
+		"absolute bin": {
 			haveCmd:  gitBin,
 			havePath: "/mock/SHOW_TOPLEVEL",
 			want:     New(gitBin, "/mock/src"),
@@ -87,7 +87,7 @@ func TestParseVersionInfo(t *testing.T) {
 	}
 
 	testCases := map[string]testCase{
-		"all parsed": testCase{
+		"all parsed": {
 			have: New(gitBin, "/mock/PARSE_ALL"),
 			want: &buildinfo.VersionInfo{
 				Version:  "1.23.456",
@@ -95,7 +95,7 @@ func TestParseVersionInfo(t *testing.T) {
 				Branch:   "test_mock",
 			},
 		},
-		"no tag": testCase{
+		"no tag": {
 			have: New(gitBin, "/mock/PARSE_TAG_FAIL"),
 			want: &buildinfo.VersionInfo{
 				Version:  "0.0.0",
@@ -103,11 +103,11 @@ func TestParseVersionInfo(t *testing.T) {
 				Branch:   "test_mock",
 			},
 		},
-		"no rev": testCase{
+		"no rev": {
 			have:      New(gitBin, "/mock/PARSE_REV_FAIL"),
 			wantError: true,
 		},
-		"no branch": testCase{
+		"no branch": {
 			have:      New(gitBin, "/mock/PARSE_BRANCH_FAIL"),
 			wantError: true,
 		},

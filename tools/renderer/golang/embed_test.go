@@ -20,13 +20,13 @@ func TestRenderBuildInfo(t *testing.T) {
 	}
 
 	testCases := map[string]testCase{
-		"simple": testCase{
+		"simple": {
 			havePkg:       "golang",
 			haveGenerator: "gotest",
 			haveArgs:      DefaultArgs("/mock/src", "gotest"),
 			want:          "embed.golden",
 		},
-		"args": testCase{
+		"args": {
 			havePkg:       "golang",
 			haveGenerator: "gotest",
 			haveArgs:      []string{"--verbose", "--minify", "--log.level", "debug"},

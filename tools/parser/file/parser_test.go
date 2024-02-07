@@ -16,19 +16,19 @@ func TestTryParse(t *testing.T) {
 	}
 
 	testCases := map[string]testCase{
-		"not found": testCase{
+		"not found": {
 			havePath:  "testdata/not_found",
 			wantError: true,
 		},
-		"unsupported": testCase{
+		"unsupported": {
 			havePath:  "testdata/unsupported",
 			wantError: true,
 		},
-		"VERSION.txt": testCase{
+		"VERSION.txt": {
 			havePath: "testdata/VERSION.txt",
 			want:     New("testdata/VERSION.txt/VERSION.txt"),
 		},
-		"VERSION": testCase{
+		"VERSION": {
 			havePath: "testdata/VERSION",
 			want:     New("testdata/VERSION/VERSION"),
 		},
@@ -56,15 +56,15 @@ func TestParseVersionInfo(t *testing.T) {
 	}
 
 	testCases := map[string]testCase{
-		"not found": testCase{
+		"not found": {
 			have:      New("testdata/variants/not_found"),
 			wantError: true,
 		},
-		"empty": testCase{
+		"empty": {
 			have:      New("testdata/variants/empty"),
 			wantError: true,
 		},
-		"full": testCase{
+		"full": {
 			have: New("testdata/variants/full"),
 			want: &buildinfo.VersionInfo{
 				Version:  "999.99.9",
@@ -72,7 +72,7 @@ func TestParseVersionInfo(t *testing.T) {
 				Branch:   "archive",
 			},
 		},
-		"minimal": testCase{
+		"minimal": {
 			have: New("testdata/variants/minimal"),
 			want: &buildinfo.VersionInfo{
 				Version:  "1.2.3",
@@ -80,7 +80,7 @@ func TestParseVersionInfo(t *testing.T) {
 				Branch:   "trunk",
 			},
 		},
-		"newline": testCase{
+		"newline": {
 			have: New("testdata/variants/newline"),
 			want: &buildinfo.VersionInfo{
 				Version:  "2.4.5",
@@ -88,7 +88,7 @@ func TestParseVersionInfo(t *testing.T) {
 				Branch:   "trunk",
 			},
 		},
-		"revision": testCase{
+		"revision": {
 			have: New("testdata/variants/revision"),
 			want: &buildinfo.VersionInfo{
 				Version:  "1.2",
@@ -96,7 +96,7 @@ func TestParseVersionInfo(t *testing.T) {
 				Branch:   "trunk",
 			},
 		},
-		"spaced": testCase{
+		"spaced": {
 			have: New("testdata/variants/spaced"),
 			want: &buildinfo.VersionInfo{
 				Version:  "0.1.2",
