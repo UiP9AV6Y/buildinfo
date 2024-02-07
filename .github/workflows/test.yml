@@ -4,19 +4,27 @@ name: Test
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ master ]
+    paths:
+    - '**/go.mod'
+    - '**/go.sum'
+    - '**/*.go'
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ master ]
+    paths:
+    - '**/go.mod'
+    - '**/go.sum'
+    - '**/*.go'
 
 jobs:
 
   test-library:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
 
@@ -26,13 +34,37 @@ jobs:
   test-tools:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version-file: 'tools/go.mod'
 
+    - name: Build
+      run: cd tools ; go build -v ./...
+
     - name: Test
       run: cd tools ; go test -v ./...
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'go.mod'
+
+    - name: Lint (Library)
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.56.0
+
+    - name: Lint (Tools)
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.56.0
+        working-directory: tools
 
