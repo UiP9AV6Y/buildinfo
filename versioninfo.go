@@ -40,15 +40,15 @@ func (i *VersionInfo) String() string {
 
 // Equal compares the fields of this instance to the given one
 func (i *VersionInfo) Equal(o *VersionInfo) bool {
-	if o == nil {
-		return i == nil
+	if i == nil || o == nil {
+		return i == nil && o == nil
 	}
 
 	return i.Version == o.Version && i.Revision == o.Revision && i.Branch == o.Branch
 }
 
 // ShortRevision returns the truncated Revision.
-// If that value is less tha 8 characters long, the result
+// If that value is less than 8 characters long, the result
 // is the Revision value itself
 func (i *VersionInfo) ShortRevision() string {
 	if len(i.Revision) < 8 {

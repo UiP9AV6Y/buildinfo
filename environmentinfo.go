@@ -39,8 +39,8 @@ func (i *EnvironmentInfo) String() string {
 
 // Equal compares the fields of this instance to the given one
 func (i *EnvironmentInfo) Equal(o *EnvironmentInfo) bool {
-	if o == nil {
-		return i == nil
+	if i == nil || o == nil {
+		return i == nil && o == nil
 	}
 
 	return i.User == o.User && i.Host == o.Host && i.Date == o.Date

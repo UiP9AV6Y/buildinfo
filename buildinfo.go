@@ -43,14 +43,18 @@ func New() *BuildInfo {
 }
 
 // Parse unmarshals the given JSON byte data into
-// a BuildInfo instance
-func Parse(info []byte) (*BuildInfo, error) {
-	result := New()
-	if err := json.Unmarshal(info, result); err != nil {
-		return nil, err
+// a BuildInfo instance. An empty input or even nil
+// are considered valid values, and return a default
+// instance.
+func Parse(info []byte) (result *BuildInfo, err error) {
+	result = New()
+	if info == nil || len(info) == 0 {
+		return
 	}
 
-	return result, nil
+	err = json.Unmarshal(info, result)
+
+	return
 }
 
 // TryParse calls Parse and returns a
@@ -81,8 +85,8 @@ func (i *BuildInfo) String() string {
 
 // Equal compares the fields of this instance to the given one
 func (i *BuildInfo) Equal(o *BuildInfo) bool {
-	if o == nil {
-		return i == nil
+	if i == nil || o == nil {
+		return i == nil && o == nil
 	}
 
 	return i.VersionInfo.Equal(o.VersionInfo) && i.EnvironmentInfo.Equal(o.EnvironmentInfo)
