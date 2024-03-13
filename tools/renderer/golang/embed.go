@@ -37,6 +37,12 @@ func Version() string {
 func Print(program string) string {
 	return buildInfo.Print(program)
 }
+
+// BuildInfo creates an independent copy of the internal
+// build information.
+func BuildInfo() *buildinfo.BuildInfo {
+	return buildInfo.Clone()
+}
 `
 )
 
