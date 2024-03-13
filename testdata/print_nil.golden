@@ -1,0 +1,6 @@
+test, version 0.0.0 (branch: trunk, revision: HEAD)
+  build user:       root
+  build host:       example.com
+  build date:       1973-11-29 21:33:10 +0000 UTC
+  go version:       go1.19.13
+  platform:         linux/amd64
