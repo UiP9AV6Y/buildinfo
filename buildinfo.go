@@ -83,6 +83,30 @@ func (i *BuildInfo) String() string {
 	return i.VersionInfo.String() + infoConcat + i.EnvironmentInfo.String()
 }
 
+// Clone creates an independant copy of itself.
+func (i *BuildInfo) Clone() *BuildInfo {
+	var (
+		i2 *BuildInfo
+		v2 *VersionInfo
+		e2 *EnvironmentInfo
+	)
+
+	if i.VersionInfo != nil {
+		v2 = i.VersionInfo.Clone()
+	}
+
+	if i.EnvironmentInfo != nil {
+		e2 = i.EnvironmentInfo.Clone()
+	}
+
+	i2 = &BuildInfo{
+		VersionInfo:     v2,
+		EnvironmentInfo: e2,
+	}
+
+	return i2
+}
+
 // Equal compares the fields of this instance to the given one
 func (i *BuildInfo) Equal(o *BuildInfo) bool {
 	if i == nil || o == nil {

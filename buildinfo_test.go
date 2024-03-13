@@ -80,6 +80,26 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestBuildInfoClone(t *testing.T) {
+	haveV := &VersionInfo{
+		Version:  "1",
+		Revision: "2",
+		Branch:   "3",
+	}
+	haveE := &EnvironmentInfo{
+		User: "1",
+		Host: "2",
+		Date: time.Unix(3, 0),
+	}
+	have := NewBuildInfo(haveV, haveE)
+	got := have.Clone()
+	got.VersionInfo = nil
+	got.EnvironmentInfo = nil
+
+	assert.Assert(t, got.VersionInfo != have.VersionInfo)
+	assert.Assert(t, got.EnvironmentInfo != have.EnvironmentInfo)
+}
+
 func TestBuildInfoEqual(t *testing.T) {
 	type testCase struct {
 		haveLeft, haveRight *BuildInfo

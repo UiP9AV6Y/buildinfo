@@ -7,6 +7,22 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+func TestEnvironmentInfoClone(t *testing.T) {
+	have := &EnvironmentInfo{
+		User: "1",
+		Host: "2",
+		Date: time.Unix(0, 0),
+	}
+	got := have.Clone()
+	got.User = "01"
+	got.Host = "02"
+	got.Date = time.Unix(3, 0)
+
+	assert.Assert(t, got.User != have.User)
+	assert.Assert(t, got.Host != have.Host)
+	assert.Assert(t, got.Date != have.Date)
+}
+
 func TestEnvironmentInfoEqual(t *testing.T) {
 	type testCase struct {
 		haveLeft, haveRight *EnvironmentInfo

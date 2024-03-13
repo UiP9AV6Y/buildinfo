@@ -6,6 +6,22 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+func TestVersionInfoClone(t *testing.T) {
+	have := &VersionInfo{
+		Version:  "1",
+		Revision: "2",
+		Branch:   "3",
+	}
+	got := have.Clone()
+	got.Version = "01"
+	got.Revision = "02"
+	got.Branch = "03"
+
+	assert.Assert(t, got.Version != have.Version)
+	assert.Assert(t, got.Revision != have.Revision)
+	assert.Assert(t, got.Branch != have.Branch)
+}
+
 func TestVersionInfoEqual(t *testing.T) {
 	type testCase struct {
 		haveLeft, haveRight *VersionInfo
