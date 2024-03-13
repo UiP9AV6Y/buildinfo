@@ -37,6 +37,13 @@ func (i *EnvironmentInfo) String() string {
 	return fmt.Sprintf("(user=%s, host=%s, date=%s)", i.User, i.Host, i.Date)
 }
 
+// Clone creates an independant copy of itself.
+func (i *EnvironmentInfo) Clone() *EnvironmentInfo {
+	i2 := *i
+
+	return &i2
+}
+
 // Equal compares the fields of this instance to the given one
 func (i *EnvironmentInfo) Equal(o *EnvironmentInfo) bool {
 	if i == nil || o == nil {

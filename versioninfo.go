@@ -38,6 +38,13 @@ func (i *VersionInfo) String() string {
 	return fmt.Sprintf("(version=%s, branch=%s, revision=%s)", i.Version, i.Branch, i.Revision)
 }
 
+// Clone creates an independant copy of itself.
+func (i *VersionInfo) Clone() *VersionInfo {
+	i2 := *i
+
+	return &i2
+}
+
 // Equal compares the fields of this instance to the given one
 func (i *VersionInfo) Equal(o *VersionInfo) bool {
 	if i == nil || o == nil {
