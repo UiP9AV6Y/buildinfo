@@ -6,12 +6,14 @@ on:
   push:
     branches: [ master ]
     paths:
+    - '.github/workflows/*.yaml'
     - '**/go.mod'
     - '**/go.sum'
     - '**/*.go'
   pull_request:
     branches: [ master ]
     paths:
+    - '.github/workflows/*.yaml'
     - '**/go.mod'
     - '**/go.sum'
     - '**/*.go'
@@ -42,6 +44,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
+        cache: false
 
     - name: Lint
       uses: golangci/golangci-lint-action@v3
@@ -73,6 +76,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version-file: 'tools/go.mod'
+        cache: false
 
     - name: Lint
       uses: golangci/golangci-lint-action@v3
