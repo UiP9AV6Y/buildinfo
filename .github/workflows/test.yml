@@ -19,6 +19,7 @@ on:
 jobs:
 
   test-library:
+    name: Test (Library)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -31,7 +32,56 @@ jobs:
     - name: Test
       run: go test -v ./...
 
+  lint-library:
+    name: Lint (Library)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'go.mod'
+
+    - name: Lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.56.0
+
   test-tools:
+    name: Test (Tools)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'tools/go.mod'
+
+    - name: Test
+      working-directory: tools
+      run: go test -v ./...
+
+  lint-tools:
+    name: Lint (Tools)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'tools/go.mod'
+
+    - name: Lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.56.0
+        working-directory: tools
+
+  build-tools:
+    name: Build (Tools)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -42,29 +92,6 @@ jobs:
         go-version-file: 'tools/go.mod'
 
     - name: Build
-      run: cd tools ; go build -v ./...
-
-    - name: Test
-      run: cd tools ; go test -v ./...
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version-file: 'go.mod'
-
-    - name: Lint (Library)
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: v1.56.0
-
-    - name: Lint (Tools)
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: v1.56.0
-        working-directory: tools
+      working-directory: tools
+      run: go build -v ./...
 
