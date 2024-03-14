@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gotest.tools/v3/assert"
+	"gotest.tools/v3/golden"
 )
 
 func TestParse(t *testing.T) {
@@ -237,6 +238,50 @@ func TestBuildInfoEqual(t *testing.T) {
 			got := tc.haveLeft.Equal(tc.haveRight)
 
 			assert.Equal(t, got, tc.want)
+		})
+	}
+}
+
+func TestBuildInfoPrint(t *testing.T) {
+	type testCase struct {
+		have *BuildInfo
+		want string
+	}
+
+	testCases := map[string]testCase{
+		"nil": {
+			have: &BuildInfo{
+				VersionInfo: nil,
+				EnvironmentInfo: &EnvironmentInfo{
+					User: "root",
+					Host: "example.com",
+					Date: time.Unix(123456790, 0),
+				},
+			},
+			want: "print_nil.golden",
+		},
+		"full": {
+			have: &BuildInfo{
+				VersionInfo: &VersionInfo{
+					Version:  "1.2.3",
+					Revision: "deadbeef",
+					Branch:   "unstable",
+				},
+				EnvironmentInfo: &EnvironmentInfo{
+					User: "root",
+					Host: "example.com",
+					Date: time.Unix(123456790, 0),
+				},
+			},
+			want: "print_full.golden",
+		},
+	}
+
+	for ctx, tc := range testCases {
+		t.Run(ctx, func(t *testing.T) {
+			got := tc.have.Print("test")
+
+			golden.Assert(t, got, tc.want)
 		})
 	}
 }

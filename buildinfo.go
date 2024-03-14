@@ -123,14 +123,23 @@ func (i *BuildInfo) JSON() ([]byte, error) {
 
 // Print returns version- and environment information.
 func (i *BuildInfo) Print(program string) string {
+	v := i.VersionInfo
+	if v == nil {
+		v = NewVersionInfo()
+	}
+	e := i.EnvironmentInfo
+	if e == nil {
+		e = NewEnvironmentInfo()
+	}
+
 	return fmt.Sprintf(infoFmt,
 		program,
-		i.VersionInfo.Version,
-		i.VersionInfo.Branch,
-		i.VersionInfo.ShortRevision(),
-		i.EnvironmentInfo.User,
-		i.EnvironmentInfo.Host,
-		i.EnvironmentInfo.Date,
+		v.Version,
+		v.Branch,
+		v.ShortRevision(),
+		e.User,
+		e.Host,
+		e.Date,
 		GoVersion,
 		GoOS+"/"+GoArch,
 	)
