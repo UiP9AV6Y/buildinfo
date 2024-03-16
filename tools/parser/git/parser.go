@@ -1,14 +1,13 @@
 package git
 
 import (
-	"errors"
 	"fmt"
-	"io"
 	"io/fs"
 	"os/exec"
 	"strings"
 
 	"github.com/UiP9AV6Y/buildinfo"
+	"github.com/UiP9AV6Y/buildinfo/tools/util"
 )
 
 const (
@@ -43,12 +42,15 @@ func TryParse(cmd, path string) (*Git, error) {
 		return nil, ErrNoRepository
 	}
 
-	o, e, err := run(cmd, path, "rev-parse", "--show-toplevel")
-	if strings.Contains(e, errParse) {
-		// ignore the error type, as long as the error output
-		// contains hints about the failure cause
-		return nil, ErrNoRepository
-	} else if err != nil {
+	argv := []string{"-C", path, "rev-parse", "--show-toplevel"}
+	o, err := util.RunCmd(realCmd, argv)
+	if err != nil {
+		if strings.Contains(err.Error(), errParse) {
+			// ignore the error type, as long as the error output
+			// contains hints about the failure cause
+			return nil, ErrNoRepository
+		}
+
 		return nil, err
 	}
 
@@ -92,14 +94,14 @@ func (g *Git) Equal(o *Git) bool {
 func (g *Git) ParseVersionInfo() (*buildinfo.VersionInfo, error) {
 	result := buildinfo.NewVersionInfo()
 
-	branch, err := g.run("rev-parse", "--abbrev-ref", "HEAD")
+	branch, err := g.git("rev-parse", "--abbrev-ref", "HEAD")
 	if err != nil {
 		return nil, fmt.Errorf("Unable to determine current git branch: %w", err)
 	} else if branch != "" {
 		result.Branch = branch
 	}
 
-	revision, err := g.run("rev-parse", "HEAD")
+	revision, err := g.git("rev-parse", "HEAD")
 	if err != nil {
 		return nil, fmt.Errorf("Unable to determine git HEAD revision: %w", err)
 	} else if revision != "" {
@@ -107,7 +109,7 @@ func (g *Git) ParseVersionInfo() (*buildinfo.VersionInfo, error) {
 	}
 
 	// ignore error in case the project has no tags
-	version, _ := g.run("describe", "--tags", "--abbrev=0")
+	version, _ := g.git("describe", "--tags", "--abbrev=0")
 	if version != "" {
 		result.Version = strings.TrimPrefix(version, "v")
 	}
@@ -115,49 +117,8 @@ func (g *Git) ParseVersionInfo() (*buildinfo.VersionInfo, error) {
 	return result, nil
 }
 
-func (g *Git) run(arg ...string) (string, error) {
-	o, e, err := run(g.cmd, g.root, arg...)
-	if err == nil {
-		return o, nil
-	} else if e != "" {
-		return "", errors.New(e)
-	}
+func (g *Git) git(arg ...string) (string, error) {
+	argv := append([]string{"-C", g.root}, arg...)
 
-	return "", err
-}
-
-func run(cmd, cwd string, arg ...string) (string, string, error) {
-	argv := append([]string{"-C", cwd}, arg...)
-	git := exec.Command(cmd, argv...)
-	if git.Err != nil {
-		return "", "", git.Err
-	}
-
-	stderr, err := git.StderrPipe()
-	if err != nil {
-		return "", "", err
-	}
-
-	stdout, err := git.StdoutPipe()
-	if err != nil {
-		return "", "", err
-	}
-
-	if err := git.Start(); err != nil {
-		return "", "", err
-	}
-
-	e, err := io.ReadAll(stderr)
-	if err != nil {
-		return "", "", err
-	}
-
-	o, _ := io.ReadAll(stdout)
-	if err != nil {
-		return "", "", err
-	}
-
-	return strings.Trim(string(o), " \n\r"),
-		strings.Trim(string(e), " \n\r"),
-		git.Wait()
+	return util.RunCmd(g.cmd, argv)
 }
