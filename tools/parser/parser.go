@@ -12,6 +12,7 @@ import (
 	"github.com/UiP9AV6Y/buildinfo/tools/parser/git"
 	"github.com/UiP9AV6Y/buildinfo/tools/parser/mock"
 	"github.com/UiP9AV6Y/buildinfo/tools/parser/os"
+	"github.com/UiP9AV6Y/buildinfo/tools/parser/rpmspec"
 )
 
 const (
@@ -47,6 +48,12 @@ func ParseVersionParser(dir string) (VersionParser, error) {
 	if f, err := file.TryParse(base); err == nil {
 		return f, nil
 	} else if !errors.Is(err, file.ErrNoFile) {
+		return nil, err
+	}
+
+	if r, err := rpmspec.TrySystemParse(base); err == nil {
+		return r, nil
+	} else if !errors.Is(err, rpmspec.ErrNoSpec) {
 		return nil, err
 	}
 
