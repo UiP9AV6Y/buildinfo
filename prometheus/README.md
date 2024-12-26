@@ -23,7 +23,7 @@ func main() {
   reg := prometheus.NewRegistry()
 
   // Create a collector and register it with the custom registry.
-  if err := reg.Register(bicol.New("example", version.BuildInfo())); err != nil {
+  if err := reg.Register(bicol.New(version.BuildInfo(), "example")); err != nil {
     log.Fatal(err)
   }
 
